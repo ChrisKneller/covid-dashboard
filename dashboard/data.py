@@ -1,6 +1,5 @@
 import requests
 import pandas as pd
-# from pandas.io.json import json_normalize
 
 BASE_API_URL = 'https://coronavirus-tracker-api.herokuapp.com/v2/'
 
