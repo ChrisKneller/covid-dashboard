@@ -24,31 +24,50 @@ fig = go.Figure(go.Scattergeo())
 fig.update_geos(
     projection_type="natural earth",
     showcountries=True,
-    countrycolor="Blue")
+    countrycolor='rgb(40,40,40)')
 fig.update_layout(height=500, margin={"r":0,"t":0,"l":0,"b":0})
-fig.add_trace(go.Scattergeo(
-    lon=[25.006],
-    lat=[13.963],
-    text='Hi Emma!',
-    name='Test entry',
-    marker=dict(
-        size=15,
-        color='rgb(239,0,255)',
-        line_width=0.5
-    )
-))
+
+# fig.add_trace(go.Scattergeo(
+#     lon=[25.006],
+#     lat=[13.963],
+#     text='Hi Emma!',
+#     name='Test entry',
+#     marker=dict(
+#         size=15,
+#         color='rgb(239,0,255)',
+#         line_width=0.5
+#     )
+# ))
 
 # Plot confirmed cases in each area
 for location in range((len(df)+1)):
-    # print(float(df.iloc[location][7]))
     try:
         fig.add_trace(go.Scattergeo(
             lon=[float(df.iloc[location][7])],
             lat=[df.iloc[location][6]],
             text=f"{df.iloc[location][1]} ({df.iloc[location][4]}): {df.iloc[location][8]} confirmed",
+            name=df.iloc[location][1],
             marker=dict(
-                size=int(df.iloc[location][8]**(0.5))/10,
+                size=int(df.iloc[location][8]**(0.5))/10 + 5,
                 color='rgb(51,102,255)',
+                line_color='rgb(40,40,40)',
+                line_width=0.5,
+            )
+        ))
+    except:
+        pass
+
+# Plot deaths in each area
+for location in range((len(df)+1)):
+    try:
+        fig.add_trace(go.Scattergeo(
+            lon=[float(df.iloc[location][7])],
+            lat=[df.iloc[location][6]],
+            text=f"{df.iloc[location][1]} ({df.iloc[location][4]}): {df.iloc[location][9]} dead",
+            name=df.iloc[location][1],
+            marker=dict(
+                size=int(df.iloc[location][9]**(0.5))/10 + 2,
+                color='red',
                 line_color='rgb(40,40,40)',
                 line_width=0.5,
             )
