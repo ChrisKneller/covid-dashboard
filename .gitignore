@@ -1,5 +1,7 @@
 # Ignore files in virtual environment
 dashboard/covid-dashboard
+dashboard/covid-dashboard/
+dashboard/covid-dashboard/Scripts
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
