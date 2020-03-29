@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 from data import df
 import plotly.graph_objects as go
+import datetime
 
 # print(df)
 
@@ -11,69 +12,69 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 def generate_table(dataframe, max_rows=999):
     return html.Table([
         html.Thead(
-            html.Tr([html.Th(col) for col in dataframe.columns])
+            html.Tr([html.Th(col) for col in ["Country","Population","Province","Last updated","Cases","Deaths"]])
         ),
         html.Tbody([
             html.Tr([
-                html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+                html.Td(dataframe.iloc[i][col]) for col in [1,3,4,5,8,9]
             ]) for i in range(min(len(dataframe), max_rows))
         ])
     ])
 
+# Create the world map
 fig = go.Figure(go.Scattergeo())
 fig.update_geos(
     projection_type="natural earth",
     showcountries=True,
-    countrycolor='rgb(40,40,40)')
-fig.update_layout(height=500, margin={"r":0,"t":0,"l":0,"b":0})
+    countrycolor='rgb(40,40,40)'
+    )
+fig.update_layout(
+    height=500, 
+    margin={"r":0,"t":0,"l":0,"b":0},
+    showlegend=False,
+    )
 
-# fig.add_trace(go.Scattergeo(
-#     lon=[25.006],
-#     lat=[13.963],
-#     text='Hi Emma!',
-#     name='Test entry',
-#     marker=dict(
-#         size=15,
-#         color='rgb(239,0,255)',
-#         line_width=0.5
-#     )
-# ))
 
-# Plot confirmed cases in each area
-for location in range((len(df)+1)):
-    try:
-        fig.add_trace(go.Scattergeo(
-            lon=[float(df.iloc[location][7])],
-            lat=[df.iloc[location][6]],
-            text=f"{df.iloc[location][1]} ({df.iloc[location][4]}): {df.iloc[location][8]} confirmed",
-            name=df.iloc[location][1],
-            marker=dict(
-                size=int(df.iloc[location][8]**(0.5))/10 + 5,
-                color='rgb(51,102,255)',
-                line_color='rgb(40,40,40)',
-                line_width=0.5,
-            )
-        ))
-    except:
-        pass
+for location in range((len(df))):
+    
+    # df.iloc[location][5] = f"{df.iloc[location][5]:%Y-%m-%d %H:%M}"
 
-# Plot deaths in each area
-for location in range((len(df)+1)):
-    try:
-        fig.add_trace(go.Scattergeo(
-            lon=[float(df.iloc[location][7])],
-            lat=[df.iloc[location][6]],
-            text=f"{df.iloc[location][1]} ({df.iloc[location][4]}): {df.iloc[location][9]} dead",
-            name=df.iloc[location][1],
-            marker=dict(
-                size=int(df.iloc[location][9]**(0.5))/10 + 2,
-                color='red',
-                line_color='rgb(40,40,40)',
-                line_width=0.5,
-            )
-        ))
-    except:
-        pass
+    # Sort out the naming of each plot point 
+    # (some are just countries, some are country provinces)
+    has_province = True if len(df.iloc[location][4])>1 else False
+    
+    location_name = df.iloc[location][1]
+    if has_province:
+        location_name += f" ({df.iloc[location][4]})"
+
+    # Plot confirmed cases in each area
+    fig.add_trace(go.Scattergeo(
+        lon=[float(df.iloc[location][7])],
+        lat=[df.iloc[location][6]],
+        text=f"{location_name}: {df.iloc[location][8]:,} confirmed",
+        name=location_name + " - confirmed",
+        marker=dict(
+            size=int(df.iloc[location][8]**(0.5))/10 + 5,
+            color='rgb(51,102,255)',
+            line_color='rgb(40,40,40)',
+            line_width=0,
+        )
+    ))
+
+    # Plot deaths in each area
+    fig.add_trace(go.Scattergeo(
+        lon=[float(df.iloc[location][7])],
+        lat=[df.iloc[location][6]],
+        text=f"{location_name}: {df.iloc[location][9]:,} dead",
+        name=location_name + " - deaths",
+        marker=dict(
+            size=int(df.iloc[location][9]**(0.5))/10 + 2,
+            color='red',
+            line_color='rgb(40,40,40)',
+            line_width=0,
+        )
+    ))
+
 
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
@@ -83,7 +84,10 @@ app.layout = html.Div(children=[
     html.H1(children='Covid-19 tracker'),
     html.H2(children='World map'),
     dcc.Graph(
-        id='World map?',
+        id='World map',
+        config={
+            "displaylogo": False,
+        },
         figure=fig
         ),
 
