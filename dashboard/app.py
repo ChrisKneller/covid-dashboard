@@ -1,12 +1,13 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-from data import df1, df2, filter_df, resources, df_from_path
+from data import df1, df2, filter_df, resources, df_from_path, hundredth_infection_date
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime
 import numpy as np
 import dash_ui as dui
+import datetime
 
 # print(df)
 
@@ -425,6 +426,58 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
         hovermode='x')
 
     fig.update_yaxes(nticks=10)
+    fig.update_xaxes(nticks=10)
+
+    return fig
+
+#
+def generate_comparable_time_series(
+        countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"], 
+        df=df_from_path(resources['countries-aggregated']), 
+        plot_confirmed=True, 
+        plot_recovered=False, 
+        plot_deaths=False
+        ):
+    
+    fig = go.Figure()
+
+    # countries_data = []
+
+    for country in countries:
+
+        hth_date = hundredth_infection_date(country)
+        country_df = df.loc[df["Country"] == country]
+        country_df = country_df[country_df['Date'] >= hth_date]
+
+        # dt_hth_date = datetime.date(int(hth_date[0:4]),int(hth_date[5:7]),int(hth_date[8:10]))
+        # relevant_dates = country_df['Date'].tolist()
+
+        x_axis_data = []
+
+        y_axis_data = country_df['Confirmed'].tolist()
+
+        for i in range(len(y_axis_data)):
+            x_axis_data.append(i)
+
+        fig.add_trace(go.Scatter(x=x_axis_data, y=y_axis_data, name=country))
+   
+    # Edit the layout
+    fig.update_layout(
+        title={
+            'text': f"Confirmed cases from 100th infection day",
+            'x': 0.5,
+            'xanchor': 'center',
+        },
+        font=dict(
+            family="Courier New, monospace",
+            size=12,
+        ),
+        xaxis_title='Days since 100th infection',
+        yaxis_title='Confirmed cases',
+        hovermode='x')
+
+    fig.update_yaxes(nticks=10)
+    fig.update_xaxes(nticks=10)
 
     return fig
 
@@ -515,8 +568,13 @@ grid.add_element(col=1, row=5, width=4, height=4, element=dcc.Graph(
     style={"width": "100%",}
 ))
 
-grid.add_element(col=5, row=5, width=8, height=4, element=html.Div(
-    style={"background-color": "red", "height": "100%", "width": "100%"}
+grid.add_element(col=5, row=5, width=8, height=4, element=dcc.Graph(
+    id="Comparable time series",
+    config={
+        "displaylogo": False,
+    },
+    figure=generate_comparable_time_series(),
+    style={"height": "100%", "width": "100%"}
 ))
 
 grid.add_element(col=1, row=9, width=9, height=4, element=dcc.Graph(

@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 import io
-
+import datetime
 
 class Country:
     def __init__(self, data):
@@ -49,6 +49,13 @@ def df_from_path(path):
         new_r = requests.get(path)
         df = pd.json_normalize(new_r.json())
     return df
+
+def hundredth_infection_date(country, df=df_from_path(resources['countries-aggregated'])):
+    country_df = filter_df(df, 'Country', country)
+    for i in range(len(country_df)):
+        if country_df.iloc[i][2] >= 100:
+            return country_df.iloc[i][0]
+    return False
 
 r = requests.get(CURRENT_API)
 s2_data = r.json()
