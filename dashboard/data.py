@@ -50,10 +50,10 @@ def df_from_path(path):
         df = pd.json_normalize(new_r.json())
     return df
 
-def hundredth_infection_date(country, df=df_from_path(resources['countries-aggregated'])):
+def xth_infection_date(country, x, df=df_from_path(resources['countries-aggregated'])):
     country_df = filter_df(df, 'Country', country)
     for i in range(len(country_df)):
-        if country_df.iloc[i][2] >= 100:
+        if country_df.iloc[i][2] >= x:
             return country_df.iloc[i][0]
     return False
 
