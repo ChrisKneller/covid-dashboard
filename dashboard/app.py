@@ -51,6 +51,11 @@ MINIMALIST_CONFIG ={
     "modeBarButtonsToRemove": CHOSEN_BUTTONS,
 }
 
+headline_df = df_from_path(resources['worldwide-aggregated'])
+current_date = headline_df.iloc[len(headline_df)-1][0]
+current_confirmed = headline_df.iloc[len(headline_df)-1][1]
+current_recovered = headline_df.iloc[len(headline_df)-1][2]
+current_deaths = headline_df.iloc[len(headline_df)-1][3]
 
 # def generate_table(dataframe, max_rows=999):
 #     return html.Table([
@@ -571,7 +576,52 @@ grid.add_element(col=1, row=5, width=3, height=4, element=dash_table.DataTable(
     sort_by=[{"column_id": "Confirmed", "direction": "desc"}],
 ))
 
-grid.add_element(col=5, row=5, width=8, height=4, element=dcc.Graph(
+
+
+grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
+    [
+        html.H4(
+            ["Covid-19 dashboard"],
+            style={"font-weight": "bold"}
+        ),
+        html.H6("Worldwide headline figures:"),
+        html.Div([
+            html.H6(
+                [f"Confirmed: {current_confirmed:,}"],
+                style={"color": CONFIRMED_COLOUR, "font-weight": "bold"}
+            ),
+            html.H6(
+                [f"Recovered: {current_recovered:,}"],
+                style={"color": RECOVERED_COLOUR, "font-weight": "bold"}
+            ),
+            html.H6(
+                [f"Deceased: {current_deaths:,}"],
+                style={"color": DEATHS_COLOUR, "font-weight": "bold"}
+            ),
+            html.P(
+                [f"Data accurate as at {current_date}"]
+            ),
+            html.P(
+                ["Created by Christian Kneller"]
+            ),
+            html.P(
+                [
+                    "Source code available at ",
+                    html.A("github", href="https://github.com/ChrisKneller/covid-dashboard/", target="_blank")
+                ]
+            )
+
+        ])
+    ],
+    style={
+        "font-family": FONT, 
+        "text-align":"center", 
+        "background-color": "white", 
+        "height": "100%",
+        "display": "flow-root"},
+))
+
+grid.add_element(col=7, row=5, width=6, height=4, element=dcc.Graph(
     id="Comparable time series",
     config=MINIMALIST_CONFIG,
     figure=generate_comparable_time_series(xth_infection=1000),
