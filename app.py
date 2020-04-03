@@ -543,7 +543,7 @@ def generate_datatable(df=df_from_path(resources['countries-aggregated']),date=F
 df_datatable = generate_datatable()
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-
+server = app.server
 
 # Define the grid 
 grid = dui.Grid(_id="grid", num_rows=12, num_cols=12, grid_padding=0)
