@@ -3,6 +3,9 @@ dashboard/covid-dashboard
 dashboard/covid-dashboard/
 dashboard/covid-dashboard/Scripts
 
+# Ignore my reference file
+dashboard/env.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
