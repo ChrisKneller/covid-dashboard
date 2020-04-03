@@ -9,14 +9,18 @@ import numpy as np
 import dash_ui as dui
 import datetime
 
-# print(df)
-
+# Define stylesheets to be used
 external_stylesheets = [
     'https://codepen.io/chriddyp/pen/bWLwgP.css',
     'https://codepen.io/rmarren1/pen/mLqGRg.css'
     ]
 
-grid = dui.Grid(_id="grid", num_rows=12, num_cols=12, grid_padding=0)
+
+# Define some constants to be used throughout
+CONFIRMED_COLOUR = 'rgba(102, 153, 255, 0.8)'
+RECOVERED_COLOUR = 'rgba(52, 189, 45, 0.8)'
+DEATHS_COLOUR = 'rgba(255, 102, 102, 0.8)'
+FONT = "Courier New, monospace"
 
 def generate_table(dataframe, max_rows=999):
     return html.Table([
@@ -75,7 +79,7 @@ def generate_map(df):
             name=location_name + " - deaths",
             marker=dict(
                 size=int(df.iloc[location][9]**(0.5))/10 + 2,
-                color='rgba(255, 102, 102, 0.8)',
+                color=DEATHS_COLOUR,
                 line_color='rgb(40,40,40)',
                 line_width=0,
             )
@@ -115,7 +119,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
         margin={"r":5,"t":10,"l":5,"b":0},
         showlegend=False,
         font=dict(
-            family="Courier New, monospace",
+            family=FONT,
             size=12,
         ),
         )
@@ -139,7 +143,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
                 name=location_name + " - confirmed",
                 marker=dict(
                     size=int(confirmed**(0.5))/10,
-                    color='rgba(102, 153, 255, 0.8)',
+                    color=CONFIRMED_COLOUR,
                     line_color='rgb(40,40,40)',
                     line_width=0,
                 )
@@ -157,7 +161,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
                 name=location_name + " - deaths",
                 marker=dict(
                     size=int(deaths**(0.5))/10,
-                    color='rgba(255, 102, 102, 0.8)',
+                    color=DEATHS_COLOUR,
                     line_color='rgb(40,40,40)',
                     line_width=0,
                 )
@@ -175,7 +179,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
                 name=location_name + " - recoveries",
                 marker=dict(
                     size=int(recoveries**(0.5))/10,
-                    color='rgba(52, 189, 45, 0.8)',
+                    color=RECOVERED_COLOUR,
                     line_color='rgb(40,40,40)',
                     line_width=0,
                 )
@@ -270,7 +274,7 @@ def generate_horizontal_bar(df, max_rows=30,cases_cutoff=100):
             tickformat=".1%",
         ),
         font=dict(
-            family="Courier New, monospace",
+            family=FONT,
             size=12,
         )
         )
@@ -372,7 +376,7 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
             tickformat=".1%",
         ),
         font=dict(
-            family="Courier New, monospace",
+            family=FONT,
             size=12,
         )
         )
@@ -380,17 +384,11 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
     fig.update_yaxes(tickfont=dict(size=12),)
     return fig
 
-# Plot a time series graph from the worldwide data
-def generate_world_time_series(resources=resources):
-    df = df_from_path(resources['worldwide-aggregated']) 
-    fig = px.line(df, x='Date', y='Confirmed')
-    # fig = px.line(df, x='Date', y='Recovered')
-    # fig = px.line(df, x='Date', y='Deaths')
-    return fig
 
-
+# Time series graph with lines for confirmed, recovered and deaths
 def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_recovered=True, plot_deaths=True):
     df = df_from_path(resources['worldwide-aggregated']) 
+    
     # Add data
     date = df['Date'].tolist()
     confirmed = df['Confirmed'].tolist()
@@ -402,13 +400,13 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
     # Create and style traces
     if plot_confirmed:
         fig.add_trace(go.Scatter(x=date, y=confirmed, name='Cases',
-                                line=dict(color='rgba(102, 153, 255, 0.8)', width=2)))
+                                line=dict(color=CONFIRMED_COLOUR, width=2)))
     if plot_recovered:
         fig.add_trace(go.Scatter(x=date, y=recovered, name = 'Recoveries',
-                                line=dict(color='rgba(52, 189, 45, 0.8)', width=2)))
+                                line=dict(color=RECOVERED_COLOUR, width=2)))
     if plot_deaths:
         fig.add_trace(go.Scatter(x=date, y=deaths, name='Deaths',
-                                line=dict(color='rgba(255, 102, 102, 0.8)', width=2)))
+                                line=dict(color=DEATHS_COLOUR, width=2)))
 
     # Edit the layout
     fig.update_layout(
@@ -418,11 +416,11 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
             'xanchor': 'center',
         },
         font=dict(
-            family="Courier New, monospace",
+            family=FONT,
             size=12,
         ),
         xaxis_title='Date',
-        yaxis_title='Confirmed numers',
+        yaxis_title='Confirmed numbers',
         hovermode='x')
 
     fig.update_yaxes(nticks=10)
@@ -441,19 +439,15 @@ def generate_comparable_time_series(
     
     fig = go.Figure()
 
-    # countries_data = []
-
     for country in countries:
 
         hth_date = hundredth_infection_date(country)
+        
+        # Filter the dataframe for country and date of 100th infection
         country_df = df.loc[df["Country"] == country]
         country_df = country_df[country_df['Date'] >= hth_date]
 
-        # dt_hth_date = datetime.date(int(hth_date[0:4]),int(hth_date[5:7]),int(hth_date[8:10]))
-        # relevant_dates = country_df['Date'].tolist()
-
         x_axis_data = []
-
         y_axis_data = country_df['Confirmed'].tolist()
 
         for i in range(len(y_axis_data)):
@@ -464,12 +458,12 @@ def generate_comparable_time_series(
     # Edit the layout
     fig.update_layout(
         title={
-            'text': f"Confirmed cases from 100th infection day",
+            'text': f"Confirmed cases over time (day 0 = 100 infections)",
             'x': 0.5,
             'xanchor': 'center',
         },
         font=dict(
-            family="Courier New, monospace",
+            family=FONT,
             size=12,
         ),
         xaxis_title='Days since 100th infection',
@@ -484,54 +478,12 @@ def generate_comparable_time_series(
 
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
-# Use this if not using grid layout
-# app.layout = html.Div(children=[
 
-#     html.H1(children='Covid-19 tracker'),
-#     html.H2(children='World map'),
-#     dcc.Graph(
-#         id='World map',
-#         config={
-#             "displaylogo": False,
-#         },
-#         figure=generate_map(df1)
-#         ),
+# Define the grid 
+grid = dui.Grid(_id="grid", num_rows=12, num_cols=12, grid_padding=0)
 
-#     dcc.Graph(
-#         id='World map with recoveries',
-#         config={
-#             "displaylogo": False,
-#         },
-#         figure=generate_map_w_recoveries(df2)
-#         ),
 
-#     html.H2(children='Death rates'),
-#     dcc.Graph(
-#         id="Death rates",
-#         config={
-#             "displaylogo": False,
-#         },
-#         figure=generate_horizontal_bar(df1),
-#     ),
-
-#     html.H2(children='Raw data'),
-#     generate_table(df1)
-# ])
-
-# grid.add_element(col=1, row=1, width=4, height=4, element=html.Div(children=[
-#     html.H5(children="Confirmed", style={"height": "8%"}),
-#     dcc.Graph(
-#         id='World map of confirmed cases',
-#         config={
-#             "displaylogo": False,
-#         },
-#         figure=generate_map_w_options(df2, plot_recoveries=False, plot_deaths=False),
-#         style={"height": "80%"}
-#     )
-#     ],
-#     # style={"height": "100%", "width": "100%"}
-# ))
-
+# Add elements to the grid
 grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
     id='World map of confirmed cases',
     config={
