@@ -534,6 +534,10 @@ def generate_datatable(df=df_from_path(resources['countries-aggregated']),date=F
     # Filter out the date column
     df = df[['Country', 'Confirmed', 'Recovered', 'Deaths']]
 
+    for i in range(len(df)):
+        if len(df.iloc[i][0]) > 15:
+            df.at[df.iloc[i].name, 'Country'] = f"{df.iloc[i][0][:12]}..."
+    
     return df
 
 df_datatable = generate_datatable()
@@ -584,10 +588,13 @@ grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
             ["Covid-19 dashboard"],
             style={"font-weight": "bold"}
         ),
-        html.H6("Worldwide headline figures:"),
+        html.P(
+            ["Worldwide headline figures:"],
+            style={"font-weight": "bold"}
+        ),
         html.Div([
             html.H6(
-                [f"Confirmed: {current_confirmed:,}"],
+                [f"Cases: {current_confirmed:,}"],
                 style={"color": CONFIRMED_COLOUR, "font-weight": "bold"}
             ),
             html.H6(
