@@ -2,13 +2,13 @@ import dash
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
+from dash.dependencies import Input, Output
 from data import df1, df2, filter_df, resources, df_from_path, xth_infection_date, xth_date
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime
 import numpy as np
 import dash_ui as dui
-import datetime
 
 # Define stylesheets to be used
 external_stylesheets = [
@@ -56,6 +56,27 @@ current_date = headline_df.iloc[len(headline_df)-1][0]
 current_confirmed = headline_df.iloc[len(headline_df)-1][1]
 current_recovered = headline_df.iloc[len(headline_df)-1][2]
 current_deaths = headline_df.iloc[len(headline_df)-1][3]
+
+
+# Set up the app / server
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+server = app.server
+
+# Define the grid 
+grid = dui.Grid(_id="grid", num_rows=12, num_cols=12, grid_padding=0)
+
+# Define the layout
+app.layout = html.Div(
+    dui.Layout(
+        grid=grid,
+    ),
+    style={
+        'height': '100vh',
+        'width': '100vw'
+    }
+)
+
+app.config.suppress_callback_exceptions = True
 
 
 # Create a world map and plot cases, recoveries and/or deaths
@@ -316,13 +337,21 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
 
 # Create a time series for different countries where we have "day 0" etc. 
 # instead of actual dates - this is better for comparability
+@app.callback(
+    Output('comp-output', 'figure'),
+    [Input(component_id='plot', component_property='value')]
+)
 def generate_comparable_time_series(
-        countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"], 
+        plot="Confirmed",
+        countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"],
         df=df_from_path(resources['countries-aggregated']),
-        xth=100, 
-        plot="Confirmed"
+        xth=100
         ):
     
+    countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"]
+    df=df_from_path(resources['countries-aggregated'])
+    xth=100 
+
     fig = go.Figure()
 
     if plot == "Confirmed":
@@ -335,7 +364,7 @@ def generate_comparable_time_series(
         plot_word = "death"
         plural_plot_word = "deaths"
     else:
-        raise ValueError("'plot' variable must be equal to 'Confirmed', 'Recovered' or 'Deaths'")
+        raise ValueError(f"'plot' variable must be equal to 'Confirmed', 'Recovered' or 'Deaths'. Your input was '{plot}'")
 
     for country in countries:
 
@@ -378,7 +407,7 @@ def generate_comparable_time_series(
     return fig
 
 
-# 
+# Generate a table displaying all headline information by country
 def generate_datatable(df=df_from_path(resources['countries-aggregated']),date=False):
 
     # If no date is given, take the latest
@@ -396,12 +425,6 @@ def generate_datatable(df=df_from_path(resources['countries-aggregated']),date=F
     return df
 
 df_datatable = generate_datatable()
-
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-server = app.server
-
-# Define the grid 
-grid = dui.Grid(_id="grid", num_rows=12, num_cols=12, grid_padding=0)
 
 
 # Add elements to the grid
@@ -483,12 +506,41 @@ grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
         "display": "flow-root"},
 ))
 
-grid.add_element(col=7, row=5, width=6, height=4, element=dcc.Graph(
-    id="Comparable time series",
-    config=MINIMALIST_CONFIG,
-    figure=generate_comparable_time_series(xth=1000, plot="Confirmed"),
-    style={"height": "100%", "width": "100%"}
+
+grid.add_element(col=7, row=5, width=6, height=4, element=html.Div([
+    dcc.RadioItems(
+        id="plot", 
+        options=[
+            {'label': "Cases", 'value': "Confirmed"},
+            {'label': "Recoveries", 'value': "Recovered"},
+            {'label': "Deaths", 'value': "Deaths"},
+        ],
+        value="Confirmed",
+        labelStyle={
+            "display": "inline-block",
+            },
+        style={
+            "height": "10%",  
+            "font-family": FONT, 
+            "text-align":"center", 
+            "background-color": "white",
+        }),
+    dcc.Graph(
+        id="comp-output",
+        config=MINIMALIST_CONFIG,
+        style={"height": "90%", "width": "100%"}
+        )
+    ],
+    style={"height": "100%", "width": "100%"},
 ))
+
+
+# grid.add_element(col=7, row=5, width=6, height=4, element=dcc.Graph(
+#     id="Comparable time series",
+#     config=MINIMALIST_CONFIG,
+#     figure=generate_comparable_time_series(xth=1000, plot="Confirmed"),
+#     style={"height": "100%", "width": "100%"}
+# ))
 
 grid.add_element(col=1, row=9, width=7, height=4, element=dcc.Graph(
     id="Overall time series",
@@ -503,17 +555,6 @@ grid.add_element(col=8, row=9, width=5, height=4, element=dcc.Graph(
     figure=generate_deathrates_by_country(max_rows=500),
     style={"height": "100%", "width": "100%",}
 ))
-
-
-app.layout = html.Div(
-    dui.Layout(
-        grid=grid,
-    ),
-    style={
-        'height': '100vh',
-        'width': '100vw'
-    }
-)
 
 
 if __name__ == '__main__':
