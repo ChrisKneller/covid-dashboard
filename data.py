@@ -57,6 +57,25 @@ def xth_infection_date(country, x, df=df_from_path(resources['countries-aggregat
             return country_df.iloc[i][0]
     return False
 
+
+def xth_date(country, x, data="cases", df=df_from_path(resources['countries-aggregated'])):
+    country_df = filter_df(df, 'Country', country)
+
+    if data == "cases":
+        j = 2
+    elif data == "recoveries":
+        j = 3
+    elif data == "deaths":
+        j = 4
+    else:
+        raise ValueError("'data' variable must be equal to 'cases', 'recoveries' or 'deaths'")
+
+    for i in range(len(country_df)):
+        if country_df.iloc[i][j] >= x:
+            return country_df.iloc[i][0]
+    return False
+
+
 r = requests.get(CURRENT_API)
 s2_data = r.json()
 df2 = pd.json_normalize(r.json())

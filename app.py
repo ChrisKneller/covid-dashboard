@@ -2,7 +2,7 @@ import dash
 import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
-from data import df1, df2, filter_df, resources, df_from_path, xth_infection_date
+from data import df1, df2, filter_df, resources, df_from_path, xth_infection_date, xth_date
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime
@@ -56,70 +56,6 @@ current_date = headline_df.iloc[len(headline_df)-1][0]
 current_confirmed = headline_df.iloc[len(headline_df)-1][1]
 current_recovered = headline_df.iloc[len(headline_df)-1][2]
 current_deaths = headline_df.iloc[len(headline_df)-1][3]
-
-# def generate_table(dataframe, max_rows=999):
-#     return html.Table([
-#         html.Thead(
-#             html.Tr([html.Th(col) for col in ["Country","Population","Province","Last updated","Cases","Deaths"]])
-#         ),
-#         html.Tbody([
-#             html.Tr([
-#                 html.Td(dataframe.iloc[i][col]) for col in [1,3,4,5,8,9]
-#             ]) for i in range(min(len(dataframe), max_rows))
-#         ])
-#     ])
-
-# # Create the world map
-# def generate_map(df):
-#     fig = go.Figure(go.Scattergeo())
-#     fig.update_geos(
-#         projection_type="natural earth",
-#         showcountries=True,
-#         countrycolor='rgb(40,40,40)'
-#         )
-#     fig.update_layout(
-#         height=500, 
-#         margin={"r":0,"t":0,"l":0,"b":0},
-#         showlegend=False,
-#         )
-
-#     for location in range((len(df))):
-#         # Sort out the naming of each plot point 
-#         # (some are just countries, some are country provinces)
-#         has_province = True if len(df.iloc[location][4])>1 else False
-        
-#         location_name = df.iloc[location][1]
-#         if has_province:
-#             location_name += f" ({df.iloc[location][4]})"
-
-#         # Plot confirmed cases in each area
-#         fig.add_trace(go.Scattergeo(
-#             lon=[float(df.iloc[location][7])],
-#             lat=[df.iloc[location][6]],
-#             text=f"{location_name}: {df.iloc[location][8]:,} confirmed",
-#             name=location_name + " - confirmed",
-#             marker=dict(
-#                 size=int(df.iloc[location][8]**(0.5))/10 + 5,
-#                 color='rgba(102, 153, 255, 0.8)',
-#                 line_color='rgb(40,40,40)',
-#                 line_width=0,
-#             )
-#         ))
-
-#         # Plot deaths in each area
-#         fig.add_trace(go.Scattergeo(
-#             lon=[float(df.iloc[location][7])],
-#             lat=[df.iloc[location][6]],
-#             text=f"{location_name}: {df.iloc[location][9]:,} dead",
-#             name=location_name + " - deaths",
-#             marker=dict(
-#                 size=int(df.iloc[location][9]**(0.5))/10 + 2,
-#                 color=DEATHS_COLOUR,
-#                 line_color='rgb(40,40,40)',
-#                 line_width=0,
-#             )
-#         ))
-#     return fig
 
 
 # Create a world map and plot cases, recoveries and/or deaths
@@ -224,103 +160,8 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
     return fig
 
 
-# # Plot a horizontal bar chat showing death rates
-# def generate_horizontal_bar(df, max_rows=30,cases_cutoff=100):
-#     if df.empty():
-#         return None
-#     top_labels = ['Death rate']
-#     colours = []    
-#     # Get a list of colours that change as you change values being plotted
-#     for row in range(max_rows):
-#         colours.append(f'rgb(255,{194/max_rows*(max_rows-row)+92},{153/max_rows*(max_rows-row)})')
-    
-#     x_data = []
-#     y_data = []
-#     y_label = []
-
-#     # Gather the data from the dataframe
-#     for location in range((len(df))):
-#         has_province = True if len(df.iloc[location][4])>1 else False
-            
-#         location_name = df.iloc[location][1]
-#         if has_province:
-#             location_name += f" ({df.iloc[location][4]})"
-
-#         if location_name == 'Canada (Diamond Princess)':
-#             continue
-
-#         cases = df.iloc[location][8]
-#         if cases == 0:
-#             cases+=1
-#         deaths = df.iloc[location][9]
-
-#         if cases > cases_cutoff:
-#             death_rate = deaths/cases
-#             x_data.append(death_rate)
-#             y_data.append(location_name)
-#             y_label.append(f"{death_rate*100:.1f}% ({deaths:,}/{cases:,})")
-
-#     # Sum the total cases & total deaths, calc avg death rate
-#     total_cases = df.sum(axis=0)[8]
-#     total_deaths = df.sum(axis=0)[9]
-#     average_death_rate = total_deaths / total_cases
-
-#     # Add avg death rate to dataset
-#     x_data.append(average_death_rate)
-#     y_data.append("Average")
-#     y_label.append(f"{average_death_rate*100:.1f}% ({total_deaths:,}/{total_cases:,})")
-
-#     # Sort the axes
-#     x_data, y_data, y_label = (list(t) for t in zip(*sorted(zip(x_data, y_data, y_label))))
-
-#     # Trim data to the amount of max_rows specified
-#     if max_rows > len(x_data):
-#         x_data = x_data[len(x_data)-max_rows:len(x_data)]
-#         y_data = y_data[len(y_data)-max_rows:len(y_data)]
-#         y_label = y_label[len(y_label)-max_rows:len(y_label)]
-
-#     # Change the colour of the average item
-#     colours[y_data.index('Average')] = 'red'
-
-#     # Plot the graph
-#     fig = go.Figure()
-#     fig.add_trace(go.Bar(
-#         x=x_data,
-#         y=y_data,
-#         text=y_label,
-#         textposition="outside",
-#         name="Death rate summary",
-#         orientation='h',
-#         marker=dict(
-#             color=colours,
-#             line=dict(
-#                 color='rgba(38, 24, 74, 0.8)',
-#                 width=1)
-#         )
-#     ))
-
-#     fig.update_xaxes(range=[0, 1])
-
-#     fig.update_layout(
-#         title=f"Worst death rates ({cases_cutoff}+ cases)",
-#         barmode='stack',
-#         margin={"r":0,"t":30,"l":0,"b":0},
-#         height=18*max_rows,
-#         xaxis=dict(
-#             tickformat=".1%",
-#         ),
-#         font=dict(
-#             family=FONT,
-#             size=12,
-#         )
-#         )
-
-#     fig.update_yaxes(tickfont=dict(size=10),)
-#     return fig
-
-
 # Plot death rate bar chart by country level
-def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=100, min_deaths=50, date=False):
+def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1000, min_deaths=200, date=False):
     df = df_from_path(resources['countries-aggregated'])
     
     # If no date is given, take the latest
@@ -408,11 +249,12 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
         title={
             'text': f"<b>Death rates ({min_cases}+ cases, {min_deaths}+ deaths)</b>",
             'x': 0.5,
+            'y': 0.95,
             'xanchor': 'center',
         },
         barmode='stack',
-        margin={"r":15,"t":30,"l":10,"b":10, "pad":5},
-        width=18*num_rows,
+        margin={"r":15,"t":40,"l":10,"b":10, "pad":5},
+        width=1*num_rows,
         yaxis=dict(
             tickformat=".1%",
         ),
@@ -477,34 +319,47 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
 def generate_comparable_time_series(
         countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"], 
         df=df_from_path(resources['countries-aggregated']),
-        xth_infection=100, 
-        plot_confirmed=True, 
-        plot_recovered=False, 
-        plot_deaths=False
+        xth=100, 
+        plot="Confirmed"
         ):
     
     fig = go.Figure()
 
+    if plot == "Confirmed":
+        plot_word = "case"
+        plural_plot_word = "cases"
+    elif plot == "Recovered":
+        plot_word = "recovery"
+        plural_plot_word = "recoveries"
+    elif plot == "Deaths":
+        plot_word = "death"
+        plural_plot_word = "deaths"
+    else:
+        raise ValueError("'plot' variable must be equal to 'Confirmed', 'Recovered' or 'Deaths'")
+
     for country in countries:
 
-        hth_date = xth_infection_date(country, xth_infection, df)
+        base_date = xth_date(country, xth, data=plural_plot_word, df=df)
         
-        # Filter the dataframe for country and date of 100th infection
+        # Filter the dataframe for country and date of xth case
         country_df = df.loc[df["Country"] == country]
-        country_df = country_df[country_df['Date'] >= hth_date]
+        try:
+            country_df = country_df[country_df['Date'] >= base_date]
+        except:
+            continue
 
         x_axis_data = []
-        y_axis_data = country_df['Confirmed'].tolist()
+        y_axis_data = country_df[plot].tolist()
 
         for i in range(len(y_axis_data)):
             x_axis_data.append(i)
 
-        fig.add_trace(go.Scatter(x=x_axis_data, y=y_axis_data, name=country))
+        fig.add_trace(go.Scatter(x=x_axis_data, y=y_axis_data, name=country, mode='lines'))
    
     # Edit the layout
     fig.update_layout(
         title={
-            'text': f"<b>Confirmed cases over time (day 0 = {xth_infection:,} infections)</b>",
+            'text': f"<b>Confirmed {plural_plot_word} over time (day 0 = {xth:,} {plural_plot_word})</b>",
             'x': 0.5,
             'xanchor': 'center',
         },
@@ -513,8 +368,8 @@ def generate_comparable_time_series(
             family=FONT,
             size=12,
         ),
-        xaxis_title=f'Days since {xth_infection}th infection',
-        yaxis_title='Confirmed cases',
+        xaxis_title=f'Days since {xth}th {plot_word}',
+        yaxis_title=f'Confirmed {plural_plot_word}',
         hovermode='x')
 
     fig.update_yaxes(nticks=10)
@@ -631,7 +486,7 @@ grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
 grid.add_element(col=7, row=5, width=6, height=4, element=dcc.Graph(
     id="Comparable time series",
     config=MINIMALIST_CONFIG,
-    figure=generate_comparable_time_series(xth_infection=1000),
+    figure=generate_comparable_time_series(xth=1000, plot="Confirmed"),
     style={"height": "100%", "width": "100%"}
 ))
 
