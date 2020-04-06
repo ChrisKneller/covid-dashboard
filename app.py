@@ -222,7 +222,11 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
     # Get a list of colours that change as you change values being plotted
     colours = []
     for row in range(num_rows+1):
-        colours.append(f'rgb(255,{194/num_rows*(num_rows-row)+92},{153/num_rows*(num_rows-row)+20})')
+        # colours.append(f'rgb(255,{194/num_rows*(num_rows-row)+92},{153/num_rows*(num_rows-row)+20})')
+        colours.append(f'rgb(255,{230-128*(row/num_rows)},{230-128*(row/num_rows)})')
+
+    # RECOVERED_COLOUR = 'rgba(52, 189, 45, 0.8)'
+    # DEATHS_COLOUR = 'rgba(255, 102, 102, 0.8)'
 
     # Sum the total cases & total deaths, calc avg death rate
     total_cases = df.sum(axis=0)[2]
@@ -244,7 +248,7 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
 
     # Change the colour of the average item
     try:
-        colours[y_data.index('Average')] = 'rgb(102, 153, 255)'
+        colours[y_data.index('Average')] = 'rgba(168, 102, 255, 0.8)'
     except:
         print(f"Average not in top {num_rows}")
 
