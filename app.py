@@ -340,6 +340,8 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
 
     return fig
 
+ts_df = df_from_path(resources['countries-aggregated'])
+
 # Create a time series for different countries where we have "day 0" etc. 
 # instead of actual dates - this is better for comparability
 @app.callback(
@@ -349,7 +351,7 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
 def generate_comparable_time_series(
         plot="Confirmed",
         countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"],
-        df=df_from_path(resources['countries-aggregated']),
+        df=ts_df,
         xth=100
         ):
     
