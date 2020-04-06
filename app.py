@@ -13,7 +13,8 @@ import dash_ui as dui
 # Define stylesheets to be used
 external_stylesheets = [
     'https://codepen.io/chriddyp/pen/bWLwgP.css',
-    'https://codepen.io/rmarren1/pen/mLqGRg.css'
+    'https://codepen.io/rmarren1/pen/mLqGRg.css',
+    'https://codepen.io/chriskneller/pen/zYGVVyR.css',
     ]
 
 
