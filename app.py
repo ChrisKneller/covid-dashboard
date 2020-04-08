@@ -53,10 +53,36 @@ MINIMALIST_CONFIG ={
 }
 
 headline_df = df_from_path(resources['worldwide-aggregated'])
+
+# Current day figures
 current_date = headline_df.iloc[len(headline_df)-1][0]
 current_confirmed = headline_df.iloc[len(headline_df)-1][1]
 current_recovered = headline_df.iloc[len(headline_df)-1][2]
 current_deaths = headline_df.iloc[len(headline_df)-1][3]
+
+# Previous day figures
+prev_date = headline_df.iloc[len(headline_df)-2][0]
+prev_confirmed = headline_df.iloc[len(headline_df)-2][1]
+prev_recovered = headline_df.iloc[len(headline_df)-2][2]
+prev_deaths = headline_df.iloc[len(headline_df)-2][3]
+
+# Growth rates
+confirmed_growth = (current_confirmed/prev_confirmed) - 1
+recovered_growth = (current_recovered/prev_recovered) - 1
+deaths_growth = (current_deaths/prev_deaths) - 1
+
+# Formatted growth rates
+def formatted_mvmt(figure, text):
+    if figure >= 0:
+        text += "(↑"
+    else:
+        text += "(↓"
+    text += f" {figure:,.1%})"
+    return text
+
+confirmed_growth_text = formatted_mvmt(confirmed_growth, "")
+recovered_growth_text = formatted_mvmt(recovered_growth, "")
+deaths_growth_text = formatted_mvmt(deaths_growth, "")
 
 
 # Set up the app / server
@@ -89,7 +115,10 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
     fig.update_geos(
         projection_type="natural earth",
         showcountries=True,
-        countrycolor='rgb(40,40,40)'
+        countrycolor="rgb(199, 205, 214)",
+        coastlinecolor = "rgb(199, 205, 214)",
+        countrywidth=0.5,
+        coastlinewidth=0.8,
         )
     
     titletext = "<b>Confirmed"
@@ -99,7 +128,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
         titletext += " recoveries"
     if plot_deaths:
         titletext += " deaths"
-    titletext += (" " + latest_date)
+    # titletext += (" " + latest_date)
     titletext += "</b>"
     
     fig.update_layout(
@@ -138,8 +167,8 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
                 marker=dict(
                     size=int(confirmed**(0.5))/10,
                     color=CONFIRMED_COLOUR,
-                    line_color='rgb(40,40,40)',
-                    line_width=0,
+                    line_color='rgba(0,0,0,0.35)',
+                    line_width=0.5,
                 )
             ))
 
@@ -156,8 +185,8 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
                 marker=dict(
                     size=int(deaths**(0.5))/10,
                     color=DEATHS_COLOUR,
-                    line_color='rgb(40,40,40)',
-                    line_width=0,
+                    line_color='rgba(0,0,0,0.35)',
+                    line_width=0.5,
                 )
             ))
 
@@ -174,8 +203,8 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
                 marker=dict(
                     size=int(recoveries**(0.5))/10,
                     color=RECOVERED_COLOUR,
-                    line_color='rgb(40,40,40)',
-                    line_width=0,
+                    line_color='rgba(0,0,0,0.35)',
+                    line_width=0.5,
                 )
             ))
 
@@ -478,20 +507,39 @@ grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
             style={"font-weight": "bold"}
         ),
         html.Div([
-            html.H6(
-                [f"Cases: {current_confirmed:,}"],
-                style={"color": CONFIRMED_COLOUR, "font-weight": "bold"}
-            ),
-            html.H6(
-                [f"Recovered: {current_recovered:,}"],
-                style={"color": RECOVERED_COLOUR, "font-weight": "bold"}
-            ),
-            html.H6(
-                [f"Deceased: {current_deaths:,}"],
-                style={"color": DEATHS_COLOUR, "font-weight": "bold"}
-            ),
+            html.Div([
+                html.H5(
+                    [f"Cases: {current_confirmed:,}"],
+                    style={"color": CONFIRMED_COLOUR, "font-weight": "bold", "display": "inline"}
+                ),
+                html.P(
+                    [f" {confirmed_growth_text}"],
+                    style={"font-size": "1.2rem", "display": "inline"}
+                )
+            ]),
+            html.Div([
+                html.H5(
+                    [f"Recoveries: {current_recovered:,}"],
+                    style={"color": RECOVERED_COLOUR, "font-weight": "bold", "display": "inline"}
+                ),
+                html.P(
+                    [f" {recovered_growth_text}"],
+                    style={"font-size": "1.2rem", "display": "inline"}
+                )
+            ]),
+            html.Div([
+                html.H5(
+                    [f"Deaths: {current_deaths:,}"],
+                    style={"color": DEATHS_COLOUR, "font-weight": "bold", "display": "inline"}
+                ),
+                html.P(
+                    [f" {deaths_growth_text}"],
+                    style={"font-size": "1.2rem", "display": "inline"}
+                )
+            ]),
             html.P(
-                [f"Data accurate as at {current_date}"]
+                [f"Data accurate as at {current_date}"],
+                style={"margin-top": "0.75em"}
             ),
             html.P(
                 ["Created by Christian Kneller"]
@@ -503,7 +551,8 @@ grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
                 ]
             )
 
-        ])
+        ]),
+        # style={"font-size": "1rem"})
     ],
     style={
         "font-family": FONT, 
