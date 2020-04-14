@@ -260,7 +260,7 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
 
     # Get a list of colours that change as you change values being plotted
     colours = []
-    for row in range(num_rows+1):
+    for row in range(num_rows):
         # colours.append(f'rgb(255,{194/num_rows*(num_rows-row)+92},{153/num_rows*(num_rows-row)+20})')
         colours.append(f'rgb(255,{230-128*(row/num_rows)},{230-128*(row/num_rows)})')
 
@@ -618,7 +618,7 @@ grid.add_element(col=1, row=9, width=7, height=4, element=dcc.Graph(
 grid.add_element(col=8, row=9, width=5, height=4, element=dcc.Graph(
     id="Death rates",
     config=MINIMALIST_CONFIG,
-    figure=generate_deathrates_by_country(max_rows=20),
+    figure=generate_deathrates_by_country(max_rows=21),
     style={"height": "100%", "width": "100%",}
 ))
 
