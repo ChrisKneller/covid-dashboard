@@ -618,7 +618,7 @@ grid.add_element(col=1, row=9, width=7, height=4, element=dcc.Graph(
 grid.add_element(col=8, row=9, width=5, height=4, element=dcc.Graph(
     id="Death rates",
     config=MINIMALIST_CONFIG,
-    figure=generate_deathrates_by_country(max_rows=500),
+    figure=generate_deathrates_by_country(max_rows=20),
     style={"height": "100%", "width": "100%",}
 ))
 
