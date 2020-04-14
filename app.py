@@ -128,7 +128,6 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
         titletext += " recoveries"
     if plot_deaths:
         titletext += " deaths"
-    # titletext += (" " + latest_date)
     titletext += "</b>"
     
     fig.update_layout(
@@ -157,56 +156,65 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
             location_name += f" ({df.iloc[location][6]})"
 
         if plot_cases:
-            # Plot confirmed cases in each area
-            confirmed = 0 if np.isnan(df.iloc[location][0]) else df.iloc[location][0]
-            fig.add_trace(go.Scattergeo(
-                lon=[float(df.iloc[location][5])],
-                lat=[df.iloc[location][4]],
-                text=f"{location_name}: {confirmed:,.0f} confirmed",
-                name=location_name + " - confirmed",
-                marker=dict(
-                    size=int(confirmed**(0.5))/10,
-                    color=CONFIRMED_COLOUR,
-                    line_color='rgba(0,0,0,0.35)',
-                    line_width=0.5,
-                )
-            ))
+            try:
+                # Plot confirmed cases in each area
+                confirmed = 0 if np.isnan(df.iloc[location][0]) else df.iloc[location][0]
+                fig.add_trace(go.Scattergeo(
+                    lon=[float(df.iloc[location][5])],
+                    lat=[df.iloc[location][4]],
+                    text=f"{location_name}: {confirmed:,.0f} confirmed",
+                    name=location_name + " - confirmed",
+                    marker=dict(
+                        size=int(confirmed**(0.5))/10,
+                        color=CONFIRMED_COLOUR,
+                        line_color='rgba(0,0,0,0.35)',
+                        line_width=0.5,
+                    )
+                ))
+            except:
+                pass
 
         if plot_deaths:
-            # Plot deaths in each area
-            deaths = 0 if np.isnan(df.iloc[location][3]) else df.iloc[location][3]
-            if deaths == 0:
-                continue
-            fig.add_trace(go.Scattergeo(
-                lon=[float(df.iloc[location][5])],
-                lat=[df.iloc[location][4]],
-                text=f"{location_name}: {deaths:,.0f} dead",
-                name=location_name + " - deaths",
-                marker=dict(
-                    size=int(deaths**(0.5))/10,
-                    color=DEATHS_COLOUR,
-                    line_color='rgba(0,0,0,0.35)',
-                    line_width=0.5,
-                )
-            ))
+            try:
+                # Plot deaths in each area
+                deaths = 0 if np.isnan(df.iloc[location][3]) else df.iloc[location][3]
+                if deaths == 0:
+                    continue
+                fig.add_trace(go.Scattergeo(
+                    lon=[float(df.iloc[location][5])],
+                    lat=[df.iloc[location][4]],
+                    text=f"{location_name}: {deaths:,.0f} dead",
+                    name=location_name + " - deaths",
+                    marker=dict(
+                        size=int(deaths**(0.5))/10,
+                        color=DEATHS_COLOUR,
+                        line_color='rgba(0,0,0,0.35)',
+                        line_width=0.5,
+                    )
+                ))
+            except:
+                pass
 
         if plot_recoveries:
-        # Plot recoveries in each area
-            recoveries = 0 if np.isnan(df.iloc[location][7]) else df.iloc[location][7]
-            if recoveries == 0:
-                continue
-            fig.add_trace(go.Scattergeo(
-                lon=[float(df.iloc[location][5])],
-                lat=[df.iloc[location][4]],
-                text=f"{location_name}: {recoveries:,.0f} recovered",
-                name=location_name + " - recoveries",
-                marker=dict(
-                    size=int(recoveries**(0.5))/10,
-                    color=RECOVERED_COLOUR,
-                    line_color='rgba(0,0,0,0.35)',
-                    line_width=0.5,
-                )
-            ))
+            try:
+                # Plot recoveries in each area
+                recoveries = 0 if np.isnan(df.iloc[location][7]) else df.iloc[location][7]
+                if recoveries == 0:
+                    continue
+                fig.add_trace(go.Scattergeo(
+                    lon=[float(df.iloc[location][5])],
+                    lat=[df.iloc[location][4]],
+                    text=f"{location_name}: {recoveries:,.0f} recovered",
+                    name=location_name + " - recoveries",
+                    marker=dict(
+                        size=int(recoveries**(0.5))/10,
+                        color=RECOVERED_COLOUR,
+                        line_color='rgba(0,0,0,0.35)',
+                        line_width=0.5,
+                    )
+                ))
+            except:
+                pass
 
     return fig
 
