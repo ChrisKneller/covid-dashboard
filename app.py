@@ -159,6 +159,8 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
             try:
                 # Plot confirmed cases in each area
                 confirmed = 0 if np.isnan(df.iloc[location][0]) else df.iloc[location][0]
+                if confirmed <= 0:
+                    continue
                 fig.add_trace(go.Scattergeo(
                     lon=[float(df.iloc[location][5])],
                     lat=[df.iloc[location][4]],
@@ -178,7 +180,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
             try:
                 # Plot deaths in each area
                 deaths = 0 if np.isnan(df.iloc[location][3]) else df.iloc[location][3]
-                if deaths == 0:
+                if deaths <= 0:
                     continue
                 fig.add_trace(go.Scattergeo(
                     lon=[float(df.iloc[location][5])],
@@ -199,7 +201,7 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
             try:
                 # Plot recoveries in each area
                 recoveries = 0 if np.isnan(df.iloc[location][7]) else df.iloc[location][7]
-                if recoveries == 0:
+                if recoveries <= 0:
                     continue
                 fig.add_trace(go.Scattergeo(
                     lon=[float(df.iloc[location][5])],
