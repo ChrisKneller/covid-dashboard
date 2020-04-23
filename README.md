@@ -1,7 +1,10 @@
 # Covid dashboard
-Setting up a dashboard for key covid-19 graphs and figures. 
+A dashboard for diplaying key covid-19 graphs and figures. 
 
-Created in python using dash and plotly.
+## Info
+Written in python using dash and plotly. 
+
+Data and graphs update automatically as the chosen API is updated. 
 
 Live version available at http://covid-19-dashboard-ck.herokuapp.com/
 
