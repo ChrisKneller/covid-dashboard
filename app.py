@@ -52,7 +52,7 @@ MINIMALIST_CONFIG ={
     "modeBarButtonsToRemove": CHOSEN_BUTTONS,
 }
 
-headline_df = df_from_path(resources['worldwide-aggregated'])
+headline_df = df_from_path(resources['worldwide-aggregate'])
 
 # Current day figures
 current_date = headline_df.iloc[len(headline_df)-1][0]
