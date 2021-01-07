@@ -21,9 +21,9 @@ external_stylesheets = [
     # "css/chriddyp-pen-bWLwgP.css",
     # "css/rmarren1-pen-mLqGRg.css",
     # "css/chriskneller-pen-zYGVVyR.css",
-    "https://gitcdn.link/repo/ChrisKneller/covid-dashboard/master/css/chriddyp-pen-bWLwgP.css",
-    "https://gitcdn.link/repo/ChrisKneller/covid-dashboard/master/css/rmarren1-pen-mLqGRg.css",
-    "https://gitcdn.link/repo/ChrisKneller/covid-dashboard/master/css/chriskneller-pen-zYGVVyR.css"
+    "https://chriskneller.github.io/chriddyp-pen-bWLwgP.css",
+    "https://chriskneller.github.io/rmarren1-pen-mLqGRg.css",
+    "https://chriskneller.github.io/chriskneller-pen-zYGVVyR.css"
 ]
 
 
