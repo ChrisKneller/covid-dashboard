@@ -18,15 +18,15 @@ class Country:
 def filter_df(df,column,value):
     return df.loc[df[column] == value]
 
-try:
-    # DATA FROM SOURCE 1
-    BASE_API_URL = 'https://coronavirus-tracker-api.herokuapp.com/v2/'
-    locations = BASE_API_URL + 'locations'
-    r = requests.get(locations)
-    s1_data = r.json()
-    df1 = pd.json_normalize(s1_data['locations'])
-except:
-    df1 = 0
+# try:
+#     # DATA FROM SOURCE 1
+#     BASE_API_URL = 'https://coronavirus-tracker-api.herokuapp.com/v2/'
+#     locations = BASE_API_URL + 'locations'
+#     r = requests.get(locations)
+#     s1_data = r.json()
+#     df1 = pd.json_normalize(s1_data['locations'])
+# except:
+#     df1 = 0
 
 # DATA FROM SOURCE 2
 INFO_URL = 'https://datahub.io/core/covid-19/datapackage.json'
@@ -50,12 +50,12 @@ def df_from_path(path):
         df = pd.json_normalize(new_r.json())
     return df
 
-def xth_infection_date(country, x, df=df_from_path(resources['countries-aggregated'])):
-    country_df = filter_df(df, 'Country', country)
-    for i in range(len(country_df)):
-        if country_df.iloc[i][2] >= x:
-            return country_df.iloc[i][0]
-    return False
+# def xth_infection_date(country, x, df=df_from_path(resources['countries-aggregated'])):
+#     country_df = filter_df(df, 'Country', country)
+#     for i in range(len(country_df)):
+#         if country_df.iloc[i][2] >= x:
+#             return country_df.iloc[i][0]
+#     return False
 
 
 def xth_date(country, x, data="cases", df=df_from_path(resources['countries-aggregated'])):

@@ -3,7 +3,13 @@ import dash_table
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from data import df1, df2, filter_df, resources, df_from_path, xth_infection_date, xth_date
+from data import (
+    df2,
+    filter_df,
+    resources,
+    df_from_path,
+    xth_date
+)
 import plotly.graph_objects as go
 import plotly.express as px
 import datetime
@@ -474,26 +480,26 @@ df_datatable = generate_datatable()
 
 
 # Add elements to the grid
-grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
-    id='World map of confirmed cases',
-    config=MINIMALIST_CONFIG,
-    figure=generate_map_w_options(df2, plot_recoveries=False, plot_deaths=False),
-    style={"height": "100%", "width": "100%"}
-))
+# grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
+#     id='World map of confirmed cases',
+#     config=MINIMALIST_CONFIG,
+#     figure=generate_map_w_options(df2, plot_recoveries=False, plot_deaths=False),
+#     style={"height": "100%", "width": "100%"}
+# ))
 
-grid.add_element(col=5, row=1, width=4, height=4, element=dcc.Graph(
-    id='World map of confirmed recoveries',
-    config=MINIMALIST_CONFIG,
-    figure=generate_map_w_options(df2, plot_cases=False, plot_deaths=False),
-    style={"height": "100%", "width": "100%"}
-))
+# grid.add_element(col=5, row=1, width=4, height=4, element=dcc.Graph(
+#     id='World map of confirmed recoveries',
+#     config=MINIMALIST_CONFIG,
+#     figure=generate_map_w_options(df2, plot_cases=False, plot_deaths=False),
+#     style={"height": "100%", "width": "100%"}
+# ))
 
-grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
-    id='World map of confirmed deaths',
-    config=MINIMALIST_CONFIG,
-    figure=generate_map_w_options(df2, plot_cases=False, plot_recoveries=False),
-    style={"height": "100%", "width": "100%"}
-))
+# grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
+#     id='World map of confirmed deaths',
+#     config=MINIMALIST_CONFIG,
+#     figure=generate_map_w_options(df2, plot_cases=False, plot_recoveries=False),
+#     style={"height": "100%", "width": "100%"}
+# ))
 
 
 grid.add_element(col=1, row=5, width=3, height=4, element=dash_table.DataTable(
