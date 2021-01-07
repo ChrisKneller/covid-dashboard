@@ -484,174 +484,174 @@ df_datatable = generate_datatable()
 
 # Add elements to the grid
 
-grid.add_element(col=1, row=1, width=3, height=4, element=html.Div(
-    style={"background-color": "red", "height": "100%", "width": "100%"}
+# grid.add_element(col=1, row=1, width=3, height=4, element=html.Div(
+#     style={"background-color": "red", "height": "100%", "width": "100%"}
+# ))
+
+# grid.add_element(col=4, row=1, width=9, height=4, element=html.Div(
+#     style={"background-color": "blue", "height": "100%", "width": "100%"}
+# ))
+
+# grid.add_element(col=1, row=5, width=12, height=4, element=html.Div(
+#     style={"background-color": "green", "height": "100%", "width": "100%"}
+# ))
+
+# grid.add_element(col=1, row=9, width=6, height=4, element=html.Div(
+#     style={"background-color": "yellow", "height": "100%", "width": "100%"}
+# ))
+
+# grid.add_element(col=7, row=9, width=6, height=4, element=html.Div(
+#     style={"background-color": "purple", "height": "100%", "width": "100%"}
+# ))
+
+
+grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
+    id='World map of confirmed cases',
+    config=MINIMALIST_CONFIG,
+    figure=generate_map_w_options(df2, plot_recoveries=False, plot_deaths=False),
+    style={"height": "100%", "width": "100%"}
 ))
 
-grid.add_element(col=4, row=1, width=9, height=4, element=html.Div(
-    style={"background-color": "blue", "height": "100%", "width": "100%"}
+grid.add_element(col=5, row=1, width=4, height=4, element=dcc.Graph(
+    id='World map of confirmed recoveries',
+    config=MINIMALIST_CONFIG,
+    figure=generate_map_w_options(df2, plot_cases=False, plot_deaths=False),
+    style={"height": "100%", "width": "100%"}
 ))
 
-grid.add_element(col=1, row=5, width=12, height=4, element=html.Div(
-    style={"background-color": "green", "height": "100%", "width": "100%"}
-))
-
-grid.add_element(col=1, row=9, width=6, height=4, element=html.Div(
-    style={"background-color": "yellow", "height": "100%", "width": "100%"}
-))
-
-grid.add_element(col=7, row=9, width=6, height=4, element=html.Div(
-    style={"background-color": "purple", "height": "100%", "width": "100%"}
+grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
+    id='World map of confirmed deaths',
+    config=MINIMALIST_CONFIG,
+    figure=generate_map_w_options(df2, plot_cases=False, plot_recoveries=False),
+    style={"height": "100%", "width": "100%"}
 ))
 
 
-# grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
-#     id='World map of confirmed cases',
+grid.add_element(col=1, row=5, width=3, height=4, element=dash_table.DataTable(
+    id="Table",
+    columns=[{"name": i, "id": i} for i in df_datatable.columns],
+    data=df_datatable.to_dict('records'),
+    sort_action="native",
+    sort_by=[{"column_id": "Confirmed", "direction": "desc"}],
+))
+
+
+
+grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
+    [
+        html.H4(
+            ["Covid-19 dashboard"],
+            style={"font-weight": "bold"}
+        ),
+        html.P(
+            ["Worldwide headline figures:"],
+            style={"font-weight": "bold"}
+        ),
+        html.Div([
+            html.Div([
+                html.H5(
+                    [f"Cases: {current_confirmed:,}"],
+                    style={"color": CONFIRMED_COLOUR, "font-weight": "bold", "display": "inline"}
+                ),
+                html.P(
+                    [f" {confirmed_growth_text}"],
+                    style={"font-size": "1.2rem", "display": "inline"}
+                )
+            ]),
+            html.Div([
+                html.H5(
+                    [f"Recoveries: {current_recovered:,}"],
+                    style={"color": RECOVERED_COLOUR, "font-weight": "bold", "display": "inline"}
+                ),
+                html.P(
+                    [f" {recovered_growth_text}"],
+                    style={"font-size": "1.2rem", "display": "inline"}
+                )
+            ]),
+            html.Div([
+                html.H5(
+                    [f"Deaths: {current_deaths:,}"],
+                    style={"color": DEATHS_COLOUR, "font-weight": "bold", "display": "inline"}
+                ),
+                html.P(
+                    [f" {deaths_growth_text}"],
+                    style={"font-size": "1.2rem", "display": "inline"}
+                )
+            ]),
+            html.P(
+                [f"Data accurate as at {current_date}"],
+                style={"margin-top": "0.75em"}
+            ),
+            html.P(
+                ["Created by Christian Kneller"]
+            ),
+            html.P(
+                [
+                    "Source code available at ",
+                    html.A("github", href="https://github.com/ChrisKneller/covid-dashboard/", target="_blank")
+                ]
+            )
+
+        ]),
+        # style={"font-size": "1rem"})
+    ],
+    style={
+        "font-family": FONT, 
+        "text-align":"center", 
+        "background-color": "white", 
+        "height": "100%",
+        "display": "flow-root"},
+))
+
+
+grid.add_element(col=7, row=5, width=1, height=4, element=html.Div([
+    dcc.RadioItems(
+        id="plot", 
+        options=[
+            {'label': "Cases", 'value': "Confirmed"},
+            {'label': "Recoveries", 'value': "Recovered"},
+            {'label': "Deaths", 'value': "Deaths"},
+        ],
+        value="Confirmed",
+        labelStyle={
+            "display": "inline-block",
+            },
+        style={
+            "height": "10%",  
+            "font-family": FONT, 
+            "text-align":"center", 
+            "background-color": "white",
+        }),
+    dcc.Graph(
+        id="comp-output",
+        config=MINIMALIST_CONFIG,
+        style={"height": "90%", "width": "100%"}
+        )
+    ],
+    style={"height": "100%", "width": "100%"},
+))
+
+
+# grid.add_element(col=7, row=5, width=6, height=4, element=dcc.Graph(
+#     id="Comparable time series",
 #     config=MINIMALIST_CONFIG,
-#     figure=generate_map_w_options(df2, plot_recoveries=False, plot_deaths=False),
+#     figure=generate_comparable_time_series(xth=1000, plot="Confirmed"),
 #     style={"height": "100%", "width": "100%"}
 # ))
 
-# grid.add_element(col=5, row=1, width=4, height=4, element=dcc.Graph(
-#     id='World map of confirmed recoveries',
-#     config=MINIMALIST_CONFIG,
-#     figure=generate_map_w_options(df2, plot_cases=False, plot_deaths=False),
-#     style={"height": "100%", "width": "100%"}
-# ))
+grid.add_element(col=1, row=9, width=7, height=4, element=dcc.Graph(
+    id="Overall time series",
+    config=MINIMALIST_CONFIG,
+    figure=generate_world_ts_options(),
+    style={"height": "100%", "width": "100%"}
+))
 
-# grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
-#     id='World map of confirmed deaths',
-#     config=MINIMALIST_CONFIG,
-#     figure=generate_map_w_options(df2, plot_cases=False, plot_recoveries=False),
-#     style={"height": "100%", "width": "100%"}
-# ))
-
-
-# grid.add_element(col=1, row=5, width=3, height=4, element=dash_table.DataTable(
-#     id="Table",
-#     columns=[{"name": i, "id": i} for i in df_datatable.columns],
-#     data=df_datatable.to_dict('records'),
-#     sort_action="native",
-#     sort_by=[{"column_id": "Confirmed", "direction": "desc"}],
-# ))
-
-
-
-# grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
-#     [
-#         html.H4(
-#             ["Covid-19 dashboard"],
-#             style={"font-weight": "bold"}
-#         ),
-#         html.P(
-#             ["Worldwide headline figures:"],
-#             style={"font-weight": "bold"}
-#         ),
-#         html.Div([
-#             html.Div([
-#                 html.H5(
-#                     [f"Cases: {current_confirmed:,}"],
-#                     style={"color": CONFIRMED_COLOUR, "font-weight": "bold", "display": "inline"}
-#                 ),
-#                 html.P(
-#                     [f" {confirmed_growth_text}"],
-#                     style={"font-size": "1.2rem", "display": "inline"}
-#                 )
-#             ]),
-#             html.Div([
-#                 html.H5(
-#                     [f"Recoveries: {current_recovered:,}"],
-#                     style={"color": RECOVERED_COLOUR, "font-weight": "bold", "display": "inline"}
-#                 ),
-#                 html.P(
-#                     [f" {recovered_growth_text}"],
-#                     style={"font-size": "1.2rem", "display": "inline"}
-#                 )
-#             ]),
-#             html.Div([
-#                 html.H5(
-#                     [f"Deaths: {current_deaths:,}"],
-#                     style={"color": DEATHS_COLOUR, "font-weight": "bold", "display": "inline"}
-#                 ),
-#                 html.P(
-#                     [f" {deaths_growth_text}"],
-#                     style={"font-size": "1.2rem", "display": "inline"}
-#                 )
-#             ]),
-#             html.P(
-#                 [f"Data accurate as at {current_date}"],
-#                 style={"margin-top": "0.75em"}
-#             ),
-#             html.P(
-#                 ["Created by Christian Kneller"]
-#             ),
-#             html.P(
-#                 [
-#                     "Source code available at ",
-#                     html.A("github", href="https://github.com/ChrisKneller/covid-dashboard/", target="_blank")
-#                 ]
-#             )
-
-#         ]),
-#         # style={"font-size": "1rem"})
-#     ],
-#     style={
-#         "font-family": FONT, 
-#         "text-align":"center", 
-#         "background-color": "white", 
-#         "height": "100%",
-#         "display": "flow-root"},
-# ))
-
-
-# grid.add_element(col=7, row=5, width=1, height=4, element=html.Div([
-#     dcc.RadioItems(
-#         id="plot", 
-#         options=[
-#             {'label': "Cases", 'value': "Confirmed"},
-#             {'label': "Recoveries", 'value': "Recovered"},
-#             {'label': "Deaths", 'value': "Deaths"},
-#         ],
-#         value="Confirmed",
-#         labelStyle={
-#             "display": "inline-block",
-#             },
-#         style={
-#             "height": "10%",  
-#             "font-family": FONT, 
-#             "text-align":"center", 
-#             "background-color": "white",
-#         }),
-#     dcc.Graph(
-#         id="comp-output",
-#         config=MINIMALIST_CONFIG,
-#         style={"height": "90%", "width": "100%"}
-#         )
-#     ],
-#     style={"height": "100%", "width": "100%"},
-# ))
-
-
-# # grid.add_element(col=7, row=5, width=6, height=4, element=dcc.Graph(
-# #     id="Comparable time series",
-# #     config=MINIMALIST_CONFIG,
-# #     figure=generate_comparable_time_series(xth=1000, plot="Confirmed"),
-# #     style={"height": "100%", "width": "100%"}
-# # ))
-
-# grid.add_element(col=1, row=9, width=7, height=4, element=dcc.Graph(
-#     id="Overall time series",
-#     config=MINIMALIST_CONFIG,
-#     figure=generate_world_ts_options(),
-#     style={"height": "100%", "width": "100%"}
-# ))
-
-# grid.add_element(col=8, row=9, width=5, height=4, element=dcc.Graph(
-#     id="Death rates",
-#     config=MINIMALIST_CONFIG,
-#     figure=generate_deathrates_by_country(max_rows=21),
-#     style={"height": "100%", "width": "100%",}
-# ))
+grid.add_element(col=8, row=9, width=5, height=4, element=dcc.Graph(
+    id="Death rates",
+    config=MINIMALIST_CONFIG,
+    figure=generate_deathrates_by_country(max_rows=21),
+    style={"height": "100%", "width": "100%",}
+))
 
 
 if __name__ == '__main__':
