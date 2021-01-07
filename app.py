@@ -149,11 +149,11 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
     for location in range((len(df))):
         # Sort out the naming of each plot point 
         # (some are just countries, some are country provinces)
-        has_province = True if df.iloc[location][6] else False
+        # has_province = True if df.iloc[location][6] else False
         
         location_name = df.iloc[location][1]
-        if has_province:
-            location_name += f" ({df.iloc[location][6]})"
+        # if has_province:
+        #     location_name += f" ({df.iloc[location][0]})"
 
         if plot_cases:
             try:
@@ -336,7 +336,7 @@ def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1
 
 # Time series graph with lines for confirmed, recovered and deaths
 def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_recovered=True, plot_deaths=True):
-    df = df_from_path(resources['worldwide-aggregated']) 
+    df = df_from_path(resources['worldwide-aggregate']) 
     
     # Add data
     date = df['Date'].tolist()
