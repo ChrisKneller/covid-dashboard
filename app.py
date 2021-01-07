@@ -18,14 +18,10 @@ import dash_ui as dui
 
 # Define stylesheets to be used
 external_stylesheets = [
-    # "css/chriddyp-pen-bWLwgP.css",
-    # "css/rmarren1-pen-mLqGRg.css",
-    # "css/chriskneller-pen-zYGVVyR.css",
     "https://chriskneller.github.io/chriddyp-pen-bWLwgP.css",
     "https://chriskneller.github.io/rmarren1-pen-mLqGRg.css",
     "https://chriskneller.github.io/chriskneller-pen-zYGVVyR.css"
 ]
-
 
 # Define some constants to be used throughout
 CONFIRMED_COLOUR = 'rgba(102, 153, 255, 0.8)'
@@ -53,6 +49,7 @@ def add_buttons_to_default(buttons=["toImage", "resetViews", "resetViewMapbox", 
     for button in buttons:
         hide_buttons.remove(button)
     return hide_buttons
+
 
 CHOSEN_BUTTONS = add_buttons_to_default()
 
@@ -113,7 +110,6 @@ app.layout = html.Div(
 )
 
 app.config.suppress_callback_exceptions = True
-
 
 # Create a world map and plot cases, recoveries and/or deaths
 def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_deaths=True):
@@ -229,11 +225,12 @@ def generate_map_w_options(df, plot_cases=True, plot_recoveries=True, plot_death
 
     return fig
 
+ts_df = df_from_path(resources['countries-aggregated'])
 
 # Plot death rate bar chart by country level
 def generate_deathrates_by_country(resources=resources, max_rows=30, min_cases=1000, min_deaths=200, date=False):
-    df = df_from_path(resources['countries-aggregated'])
-    
+    df = ts_df
+
     # If no date is given, take the latest
     if not date:
         date = df.iloc[len(df)-1,0] 
@@ -388,7 +385,6 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
 
     return fig
 
-ts_df = df_from_path(resources['countries-aggregated'])
 
 # Create a time series for different countries where we have "day 0" etc. 
 # instead of actual dates - this is better for comparability
@@ -402,10 +398,6 @@ def generate_comparable_time_series(
         df=ts_df,
         xth=100
         ):
-    
-    countries=["China", "United Kingdom", "Italy", "Spain", "Iran", "US", "Korea, South"]
-    df=df_from_path(resources['countries-aggregated'])
-    xth=100 
 
     fig = go.Figure()
 
@@ -463,7 +455,7 @@ def generate_comparable_time_series(
 
 
 # Generate a table displaying all headline information by country
-def generate_datatable(df=df_from_path(resources['countries-aggregated']),date=False):
+def generate_datatable(df=ts_df,date=False):
 
     # If no date is given, take the latest
     if not date:
@@ -479,31 +471,7 @@ def generate_datatable(df=df_from_path(resources['countries-aggregated']),date=F
     
     return df
 
-df_datatable = generate_datatable()
-
-
-# Add elements to the grid
-
-# grid.add_element(col=1, row=1, width=3, height=4, element=html.Div(
-#     style={"background-color": "red", "height": "100%", "width": "100%"}
-# ))
-
-# grid.add_element(col=4, row=1, width=9, height=4, element=html.Div(
-#     style={"background-color": "blue", "height": "100%", "width": "100%"}
-# ))
-
-# grid.add_element(col=1, row=5, width=12, height=4, element=html.Div(
-#     style={"background-color": "green", "height": "100%", "width": "100%"}
-# ))
-
-# grid.add_element(col=1, row=9, width=6, height=4, element=html.Div(
-#     style={"background-color": "yellow", "height": "100%", "width": "100%"}
-# ))
-
-# grid.add_element(col=7, row=9, width=6, height=4, element=html.Div(
-#     style={"background-color": "purple", "height": "100%", "width": "100%"}
-# ))
-
+# df_datatable = generate_datatable()
 
 grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
     id='World map of confirmed cases',
@@ -526,6 +494,7 @@ grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
     style={"height": "100%", "width": "100%"}
 ))
 
+df_datatable = generate_datatable()
 
 grid.add_element(col=1, row=5, width=3, height=4, element=dash_table.DataTable(
     id="Table",
@@ -603,7 +572,7 @@ grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
 ))
 
 
-grid.add_element(col=7, row=5, width=1, height=4, element=html.Div([
+grid.add_element(col=7, row=5, width=6, height=4, element=html.Div([
     dcc.RadioItems(
         id="plot", 
         options=[
