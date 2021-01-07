@@ -18,13 +18,13 @@ import dash_ui as dui
 
 # Define stylesheets to be used
 external_stylesheets = [
-    # 'https://codepen.io/chriddyp/pen/bWLwgP.css',
-    # 'https://codepen.io/rmarren1/pen/mLqGRg.css',
-    # 'https://codepen.io/chriskneller/pen/zYGVVyR.css',
-    "https://raw.githubusercontent.com/ChrisKneller/covid-dashboard/master/css/chriddyp-pen-bWLwgP.css",
-    "https://raw.githubusercontent.com/ChrisKneller/covid-dashboard/master/css/rmarren1-pen-mLqGRg.css",
-    "https://raw.githubusercontent.com/ChrisKneller/covid-dashboard/master/css/chriskneller-pen-zYGVVyR.css"
-    ]
+    # "css/chriddyp-pen-bWLwgP.css",
+    # "css/rmarren1-pen-mLqGRg.css",
+    # "css/chriskneller-pen-zYGVVyR.css",
+    "https://gitcdn.link/repo/ChrisKneller/covid-dashboard/master/css/chriddyp-pen-bWLwgP.css",
+    "https://gitcdn.link/repo/ChrisKneller/covid-dashboard/master/css/rmarren1-pen-mLqGRg.css",
+    "https://gitcdn.link/repo/ChrisKneller/covid-dashboard/master/css/chriskneller-pen-zYGVVyR.css"
+]
 
 
 # Define some constants to be used throughout
@@ -534,7 +534,6 @@ grid.add_element(col=1, row=5, width=3, height=4, element=dash_table.DataTable(
     sort_action="native",
     sort_by=[{"column_id": "Confirmed", "direction": "desc"}],
 ))
-
 
 
 grid.add_element(col=4, row=5, width=3, height=4, element=html.Div(
