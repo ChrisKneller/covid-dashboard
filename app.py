@@ -334,7 +334,6 @@ def generate_deathrates_by_country(
     # Gather the data from the dataframe
     for location in range((len(df))):            
         location_name = df.iloc[location][1]
-        print("===============================================================")
         # Acronymize location name if it's more than 1 word and is too long
         # if len(location_name.split(" ")) > 1 and len(location_name) > 13:
         #     print(location_name)
@@ -344,7 +343,6 @@ def generate_deathrates_by_country(
         #         location_abbv += word[0]
         #     location_name = location_abbv
         #     print(location_name)
-        print("===============================================================")
 
         cases = df.iloc[location][2]
         if cases == 0:
@@ -735,5 +733,5 @@ logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 
 if __name__ == '__main__':
-    logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
+    # logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
     app.run_server(debug=True)
