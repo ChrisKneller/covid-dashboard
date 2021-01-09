@@ -13,7 +13,7 @@ import logging
 from datetime import datetime
 from inspect import currentframe, getframeinfo
 
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # from data import (
