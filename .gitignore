@@ -2,6 +2,7 @@
 dashboard/covid-dashboard
 dashboard/covid-dashboard/
 dashboard/covid-dashboard/Scripts
+covid-dashboard
 
 # Ignore my reference file
 dashboard/env.py

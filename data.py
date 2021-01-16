@@ -15,11 +15,7 @@ class Country:
         return self.country
 
 
-# def filter_df(df, column, value):
-#     return df.loc[df[column] == value]
-
 DATA_SOURCE = 'https://datahub.io/core/covid-19/datapackage.json'
-
 
 def get_resources(url=DATA_SOURCE):
     r = requests.get(url)
@@ -51,28 +47,3 @@ def df_from_path(path):
         new_r = requests.get(path)
         df = pd.json_normalize(new_r.json())
     return df
-
-# def xth_infection_date(country, x, df=df_from_path(resources['countries-aggregated'])):
-#     country_df = filter_df(df, 'Country', country)
-#     for i in range(len(country_df)):
-#         if country_df.iloc[i][2] >= x:
-#             return country_df.iloc[i][0]
-#     return False
-
-
-# def xth_date(country, x, data="cases", df=df_from_path(resources['countries-aggregated'])):
-#     country_df = filter_df(df, 'Country', country)
-
-#     if data == "cases":
-#         j = 2
-#     elif data == "recoveries":
-#         j = 3
-#     elif data == "deaths":
-#         j = 4
-#     else:
-#         raise ValueError("'data' variable must be equal to 'cases', 'recoveries' or 'deaths'")
-
-#     for i in range(len(country_df)):
-#         if country_df.iloc[i][j] >= x:
-#             return country_df.iloc[i][0]
-#     return False

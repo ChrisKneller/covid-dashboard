@@ -13,16 +13,6 @@ import logging
 from datetime import datetime
 from inspect import currentframe, getframeinfo
 
-# logging.basicConfig(level=logging.DEBUG)
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
-
-# from data import (
-#     df2,
-#     filter_df,
-#     resources,
-#     df_from_path,
-#     xth_date
-# )
 
 from data import (
     DATA_SOURCE,
@@ -43,7 +33,6 @@ external_stylesheets = [
     "https://chriskneller.github.io/chriskneller-pen-zYGVVyR.css"
 ]
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # Define some constants to be used throughout
 CONFIRMED_COLOUR = 'rgba(102, 153, 255, 0.8)'
@@ -67,14 +56,12 @@ TOOLBAR_BUTTONS = [
   "resetViewMapbox"
 ]
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 def add_buttons_to_default(buttons=["toImage", "resetViews", "resetViewMapbox", "resetGeo", "resetScale2d"], hide_buttons=TOOLBAR_BUTTONS):
     for button in buttons:
         hide_buttons.remove(button)
     return hide_buttons
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 CHOSEN_BUTTONS = add_buttons_to_default()
 
@@ -82,43 +69,33 @@ MINIMALIST_CONFIG ={
     "displaylogo": False,
     "modeBarButtonsToRemove": CHOSEN_BUTTONS,
 }
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # if we currently have no resources, get them
 try:
     resources
     current_api
-except Exception as e:
+except NameError:
     resources, current_api = get_resources(DATA_SOURCE)
-    logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
-    logging.error(e)
-    logging.info("...but now it is")
 
 try:
     headline_df
-except Exception as e:
+except NameError:
     headline_df = df_from_path(resources['worldwide-aggregate'])
-    logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
-    logging.error(e)
-    logging.info("...but now it is")
 
 try:
     ts_df
-except Exception as e:
+except NameError:
     ts_df = df_from_path(resources['countries-aggregated'])
-    logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
-    logging.error(e)
-    logging.info("...but now it is")
 
 try:
     df2
-except Exception as e:
+except NameError:
     df2 = get_df(current_api)
-    logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
-    logging.error(e)
-    logging.info("...but now it is")
 
-ref_table = df_from_path(resources['reference'])
+try:
+    ref_table
+except NameError:
+    ref_table = df_from_path(resources['reference'])
 
 # print(ref_table)
 
@@ -139,7 +116,6 @@ confirmed_growth = (current_confirmed/prev_confirmed) - 1
 recovered_growth = (current_recovered/prev_recovered) - 1
 deaths_growth = (current_deaths/prev_deaths) - 1
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # Formatted growth rates
 def formatted_mvmt(figure, text):
@@ -154,18 +130,14 @@ confirmed_growth_text = formatted_mvmt(confirmed_growth, "")
 recovered_growth_text = formatted_mvmt(recovered_growth, "")
 deaths_growth_text = formatted_mvmt(deaths_growth, "")
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # Set up the app / server
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 server = app.server
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # Define the grid 
 grid = dui.Grid(_id="grid", num_rows=12, num_cols=12, grid_padding=2)
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # Define the layout
 app.layout = html.Div(
@@ -177,15 +149,11 @@ app.layout = html.Div(
         'width': '100vw'
     }
 )
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 app.config.suppress_callback_exceptions = True
 
 # Create a world map and plot cases, recoveries and/or deaths
 def generate_map_w_options(df, ref, plot_cases=True, plot_recoveries=True, plot_deaths=True):
-    logging.info("******************************************************")
-    logging.info(ref)
-    logging.info("******************************************************")
     latest_date = df.iloc[len(df)-1][2]
     df = filter_df(df,"Date",latest_date)
     plotted = defaultdict(lambda: False)
@@ -241,7 +209,6 @@ def generate_map_w_options(df, ref, plot_cases=True, plot_recoveries=True, plot_
                 loc_details = ref.loc[ref['Combined_Key'] == location_name] 
                 lon = [loc_details.iloc[0][9]]
                 lat = [loc_details.iloc[0][8]]
-                # logging.debug(f"{lon},{lat}")
                 fig.add_trace(go.Scattergeo(
                     lon=lon,
                     lat=lat,
@@ -254,11 +221,8 @@ def generate_map_w_options(df, ref, plot_cases=True, plot_recoveries=True, plot_
                         line_width=0.5,
                     )
                 ))
-                # logging.debug(f"Attempted to plot {confirmed} cases for {location_name} at {[float(df.iloc[location][5])]}, {[df.iloc[location][4]]}")
                 plotted[f"c_{location_name}"] = True
             except Exception as e:
-                logging.debug(f"Couldn't plot cases for {location_name}")
-                logging.debug(e)
                 pass
 
         if plot_deaths and not plotted[f"d_{location_name}"]:
@@ -285,7 +249,6 @@ def generate_map_w_options(df, ref, plot_cases=True, plot_recoveries=True, plot_
                 ))
                 plotted[f"d_{location_name}"] = True
             except Exception as e:
-                logging.debug("Couldn't plot deaths")
                 pass
 
         if plot_recoveries and not plotted[f"r_{location_name}"]:
@@ -308,11 +271,9 @@ def generate_map_w_options(df, ref, plot_cases=True, plot_recoveries=True, plot_
                 ))
                 plotted[f"r_{location_name}"] = True
             except Exception as e:
-                # logging.debug("Couldn't plot recoveries")
                 pass
 
     return fig
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 
 # Plot death rate bar chart by country level
@@ -334,15 +295,6 @@ def generate_deathrates_by_country(
     # Gather the data from the dataframe
     for location in range((len(df))):            
         location_name = df.iloc[location][1]
-        # Acronymize location name if it's more than 1 word and is too long
-        # if len(location_name.split(" ")) > 1 and len(location_name) > 13:
-        #     print(location_name)
-        #     location_abbv = ""
-        #     for word in location_name.split(" "):
-        #         print(word)
-        #         location_abbv += word[0]
-        #     location_name = location_abbv
-        #     print(location_name)
 
         cases = df.iloc[location][2]
         if cases == 0:
@@ -489,11 +441,13 @@ def generate_world_ts_options(resources=resources, plot_confirmed=True, plot_rec
 def generate_comparable_time_series(
         plot="Confirmed",
         countries=[
-            "China", "United Kingdom", "Italy","Spain", "Iran", "US",
-            "Korea, South"
+            "China", "United Kingdom", "Italy", "Spain", "Iran", "US",
+            "Vietnam", "New Zealand", "Mexico"
         ],
         df=ts_df,
-        xth=100
+        xth=1,
+        ref_table=ref_table,
+        per_x_people=100000
         ):
 
     fig = go.Figure()
@@ -513,7 +467,9 @@ def generate_comparable_time_series(
     for country in countries:
 
         base_date = xth_date(df, country, xth, data=plural_plot_word)
-        
+        fdf = filter_df(ref_table, "Combined_Key", country)
+        popn = int(fdf["Population"])
+
         # Filter the dataframe for country and date of xth case
         country_df = df.loc[df["Country"] == country]
         try:
@@ -522,17 +478,19 @@ def generate_comparable_time_series(
             continue
 
         x_axis_data = []
-        y_axis_data = country_df[plot].tolist()
+        y_axis_data = country_df[plot].div(popn).mul(per_x_people).tolist()
 
         for i in range(len(y_axis_data)):
             x_axis_data.append(i)
 
         fig.add_trace(go.Scatter(x=x_axis_data, y=y_axis_data, name=country, mode='lines'))
-   
+
+    per_x_people = str(f"{per_x_people:,}")
+
     # Edit the layout
     fig.update_layout(
         title={
-            'text': f"<b>Confirmed {plural_plot_word} over time (day 0 = {xth:,} {plural_plot_word})</b>",
+            'text': f"<b>Confirmed {plural_plot_word} over time (per {per_x_people} people)</b>",
             'x': 0.5,
             'xanchor': 'center',
         },
@@ -541,8 +499,8 @@ def generate_comparable_time_series(
             family=FONT,
             size=12,
         ),
-        xaxis_title=f'Days since {xth}th {plot_word}',
-        yaxis_title=f'Confirmed {plural_plot_word}',
+        xaxis_title=f'Days since {xth}st {plot_word}',
+        yaxis_title=f'Confirmed {plural_plot_word} per {per_x_people} people',
         hovermode='x')
 
     fig.update_yaxes(nticks=10)
@@ -568,7 +526,6 @@ def generate_datatable(df=ts_df,date=False):
     
     return df
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
     id='World map of confirmed cases',
@@ -577,7 +534,6 @@ grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
     style={"height": "100%", "width": "100%"}
 ))
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 # grid.add_element(col=5, row=1, width=4, height=4, element=dcc.Graph(
 #     id='World map of confirmed recoveries',
@@ -586,7 +542,6 @@ logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 #     style={"height": "100%", "width": "100%"}
 # ))
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
     id='World map of confirmed deaths',
@@ -595,11 +550,9 @@ grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
     style={"height": "100%", "width": "100%"}
 ))
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 df_datatable = generate_datatable()
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=1, row=5, width=4, height=4, element=dash_table.DataTable(
     id="Table",
@@ -609,7 +562,6 @@ grid.add_element(col=1, row=5, width=4, height=4, element=dash_table.DataTable(
     sort_by=[{"column_id": "Confirmed", "direction": "desc"}],
 ))
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=5, row=5, width=4, height=4, element=html.Div(
     [
@@ -677,14 +629,13 @@ grid.add_element(col=5, row=5, width=4, height=4, element=html.Div(
         "display": "flow-root"},
 ))
 
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=9, row=5, width=4, height=4, element=html.Div([
     dcc.RadioItems(
         id="plot", 
         options=[
             {'label': "Cases", 'value': "Confirmed"},
-            {'label': "Recoveries", 'value': "Recovered"},
+            # {'label': "Recoveries", 'value': "Recovered"},
             {'label': "Deaths", 'value': "Deaths"},
         ],
         value="Confirmed",
@@ -713,7 +664,6 @@ grid.add_element(col=9, row=5, width=4, height=4, element=html.Div([
 #     figure=generate_comparable_time_series(xth=1000, plot="Confirmed"),
 #     style={"height": "100%", "width": "100%"}
 # ))
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=1, row=9, width=4, height=4, element=dcc.Graph(
     id="Overall time series",
@@ -721,17 +671,14 @@ grid.add_element(col=1, row=9, width=4, height=4, element=dcc.Graph(
     figure=generate_world_ts_options(),
     style={"height": "100%", "width": "100%"}
 ))
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 grid.add_element(col=9, row=9, width=4, height=4, element=dcc.Graph(
     id="Death rates",
     config=MINIMALIST_CONFIG,
-    figure=generate_deathrates_by_country(max_rows=40),
+    figure=generate_deathrates_by_country(max_rows=20),
     style={"height": "100%", "width": "100%",}
 ))
-logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
 
 
 if __name__ == '__main__':
-    # logging.debug(f"{getframeinfo(currentframe()).lineno}: {datetime.now()}")
     app.run_server(debug=True)
