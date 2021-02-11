@@ -527,7 +527,7 @@ def generate_datatable(df=ts_df,date=False):
     return df
 
 
-grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
+grid.add_element(col=1, row=1, width=6, height=4, element=dcc.Graph(
     id='World map of confirmed cases',
     config=MINIMALIST_CONFIG,
     figure=generate_map_w_options(df2, ref_table, plot_recoveries=False, plot_deaths=False),
@@ -543,7 +543,7 @@ grid.add_element(col=1, row=1, width=4, height=4, element=dcc.Graph(
 # ))
 
 
-grid.add_element(col=9, row=1, width=4, height=4, element=dcc.Graph(
+grid.add_element(col=7, row=1, width=6, height=4, element=dcc.Graph(
     id='World map of confirmed deaths',
     config=MINIMALIST_CONFIG,
     figure=generate_map_w_options(df2, ref_table, plot_cases=False, plot_recoveries=False),
@@ -665,17 +665,17 @@ grid.add_element(col=9, row=5, width=4, height=4, element=html.Div([
 #     style={"height": "100%", "width": "100%"}
 # ))
 
-grid.add_element(col=1, row=9, width=4, height=4, element=dcc.Graph(
+grid.add_element(col=1, row=9, width=6, height=4, element=dcc.Graph(
     id="Overall time series",
     config=MINIMALIST_CONFIG,
     figure=generate_world_ts_options(),
     style={"height": "100%", "width": "100%"}
 ))
 
-grid.add_element(col=9, row=9, width=4, height=4, element=dcc.Graph(
+grid.add_element(col=7, row=9, width=6, height=4, element=dcc.Graph(
     id="Death rates",
     config=MINIMALIST_CONFIG,
-    figure=generate_deathrates_by_country(max_rows=20),
+    figure=generate_deathrates_by_country(max_rows=40),
     style={"height": "100%", "width": "100%",}
 ))
 
